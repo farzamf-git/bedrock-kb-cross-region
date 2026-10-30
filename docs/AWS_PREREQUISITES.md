@@ -5,7 +5,7 @@ The example targets Singapore (`ap-southeast-1`) with these resources:
 | Purpose | Selected resource |
 | --- | --- |
 | Embeddings | `cohere.embed-english-v3` in Singapore |
-| Managed RAG generation | `apac.amazon.nova-lite-v1:0` profile resolved in Singapore |
+| Managed RAG generation | `global.anthropic.claude-haiku-4-5-20251001-v1:0` profile resolved in Singapore |
 | Explicit remote generation | `amazon.nova-lite-v1:0` on demand in Sydney (`ap-southeast-2`) |
 | Vector store | S3 Vectors, 1024 dimensions, float32, cosine |
 | Chunking | `NONE`, because the entire synthetic fixture is below 300 tokens |
@@ -14,6 +14,11 @@ Verify availability and invocation access in your own account. A successful
 model listing does not establish invocation access. Cohere Embed v3 has fixed
 1024 dimensions: configure the vector index with that dimension and omit
 configurable dimensions from the KB request.
+
+Claude Haiku 4.5 requires an inference profile at the `bedrock-runtime`
+endpoint. Ensure the account's Anthropic use-case requirements are satisfied
+and the caller can invoke this model. The read-only profile lookup verifies
+availability, not generation access.
 
 ## Caller permissions
 
@@ -39,9 +44,9 @@ remote runtime endpoint are separate permissions and availability checks.
 
 ## Data residency
 
-The profile can process the question and retrieved context in any eligible
-destination, including Singapore. The split path sends that same context to the
-chosen remote runtime endpoint. Use synthetic data for this experiment. Match
+The global profile can process the question and retrieved context outside APAC;
+it is not constrained to an APAC geographic boundary. The split path sends that
+same context to the chosen remote runtime endpoint. Use synthetic data for this experiment. Match
 the allowed processing Regions to the requirements of real data before adapting
 the example.
 
@@ -64,4 +69,5 @@ summary uses a small field allowlist.
 
 References: [KB permissions](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-permissions.html),
 [S3 Vectors setup](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-setup.html),
-and [inference-profile IAM](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-prereq.html).
+[inference-profile IAM](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-prereq.html),
+and [Claude Haiku 4.5 model access](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-anthropic-claude-haiku-4-5.html).

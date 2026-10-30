@@ -10,7 +10,8 @@ import probe
 
 ACCOUNT = "123456789012"
 PROFILE_ARN = (
-    f"arn:aws:bedrock:ap-southeast-1:{ACCOUNT}:inference-profile/apac.amazon.nova-lite-v1:0"
+    f"arn:aws:bedrock:ap-southeast-1:{ACCOUNT}:inference-profile/"
+    "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 )
 CHUNKS = [{"content": {"text": "The verification code is ORCHID-7319."}, "score": 0.93}]
 
@@ -23,9 +24,17 @@ def aws(monkeypatch):
     }
     clients["sts"].get_caller_identity.return_value = {"Account": ACCOUNT}
     clients["bedrock"].get_inference_profile.return_value = {
+        "inferenceProfileId": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
         "inferenceProfileArn": PROFILE_ARN,
         "models": [
-            {"modelArn": "arn:aws:bedrock:ap-southeast-2::foundation-model/amazon.nova-lite-v1:0"}
+            {
+                "modelArn": "arn:aws:bedrock:::foundation-model/"
+                "anthropic.claude-haiku-4-5-20251001-v1:0"
+            },
+            {
+                "modelArn": "arn:aws:bedrock:ap-southeast-1::foundation-model/"
+                "anthropic.claude-haiku-4-5-20251001-v1:0"
+            },
         ],
     }
     clients["bedrock-agent"].get_knowledge_base.return_value = {"knowledgeBase": {}}
@@ -98,6 +107,11 @@ def test_end_to_end_paths_use_correct_regions_and_known_answer(aws, tmp_path):
     assert code == 0
     assert report["status"] == "BOTH_PATHS_PASSED"
     assert all(report["expected_text_found"].values())
+    clients["bedrock"].get_inference_profile.assert_called_once_with(
+        inferenceProfileIdentifier="global.anthropic.claude-haiku-4-5-20251001-v1:0"
+    )
+    assert report["inference_profile"] == "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+    assert report["profile_destination_regions"] == ["ap-southeast-1", "global/unspecified"]
     native = clients["bedrock-agent-runtime"].retrieve_and_generate.call_args.kwargs
     assert (
         native["retrieveAndGenerateConfiguration"]["knowledgeBaseConfiguration"]["modelArn"]
@@ -111,6 +125,27 @@ def test_end_to_end_paths_use_correct_regions_and_known_answer(aws, tmp_path):
     assert all(
         call.kwargs["config"].retries["total_max_attempts"] == 1
         for call in session.client.call_args_list
+    )
+
+
+@pytest.mark.parametrize("use_arn", [False, True])
+def test_inference_profile_override_is_used_and_reported(aws, tmp_path, use_arn):
+    clients, _ = aws
+    selected = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    selected_arn = PROFILE_ARN.replace("global.anthropic.claude-haiku-4-5-20251001-v1:0", selected)
+    clients["bedrock"].get_inference_profile.return_value["inferenceProfileId"] = selected
+    clients["bedrock"].get_inference_profile.return_value["inferenceProfileArn"] = selected_arn
+    requested = selected_arn if use_arn else selected
+    code, report = run(tmp_path, "--inference-profile", requested)
+    assert code == 0
+    clients["bedrock"].get_inference_profile.assert_called_once_with(
+        inferenceProfileIdentifier=requested
+    )
+    assert report["inference_profile"] == selected
+    request = clients["bedrock-agent-runtime"].retrieve_and_generate.call_args.kwargs
+    assert (
+        request["retrieveAndGenerateConfiguration"]["knowledgeBaseConfiguration"]["modelArn"]
+        == selected_arn
     )
 
 

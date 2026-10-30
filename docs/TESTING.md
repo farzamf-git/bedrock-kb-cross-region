@@ -39,10 +39,16 @@ This requires explicit AWS credentials and makes paid calls. It creates one
 synthetic Singapore vector KB, checks `ORCHID-7319` in both generation answers,
 and attempts cleanup in a `finally` block.
 
+The native generation default is now
+`global.anthropic.claude-haiku-4-5-20251001-v1:0`. Pass `--inference-profile` to
+the runner to override it; the generated summary records the profile selected
+by the probe. This code update received offline validation and a read-only
+Singapore profile lookup, but no new live generation test.
+
 The runner saves raw output locally under `artifacts/` and emits a sanitized
 `summary.json`. The committed [30 October 2026 summary](evidence/2026-10-30.json)
-records observed outcomes and code hashes. It does not include account IDs,
-principal ARNs, request IDs, HTTP headers, or raw retrieved references.
+records the earlier Nova Lite outcomes and code hashes. It does not include
+account IDs, principal ARNs, request IDs, HTTP headers, or raw retrieved references.
 
 The recorded test establishes native inference-profile interoperability and the
 explicit Singapore-retrieval/Sydney-generation path. It does not establish the

@@ -11,6 +11,8 @@ from pathlib import Path
 import boto3
 from botocore.config import Config
 
+DEFAULT_INFERENCE_PROFILE = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
+
 
 def rag_request(kb_id, model_arn, question):
     """Keep the Knowledge Base request in its home Region."""
@@ -62,7 +64,7 @@ def main(argv=None):
     parser.add_argument("--kb-region", default="ap-southeast-1")
     parser.add_argument("--kb-id")
     parser.add_argument("--question")
-    parser.add_argument("--inference-profile", default="apac.amazon.nova-lite-v1:0")
+    parser.add_argument("--inference-profile", default=DEFAULT_INFERENCE_PROFILE)
     parser.add_argument("--remote-region", default="ap-southeast-2")
     parser.add_argument("--remote-model", default="amazon.nova-lite-v1:0")
     parser.add_argument("--expected-text", help="Known answer from the ingested document")
@@ -89,6 +91,8 @@ def main(argv=None):
         "profile": args.profile or "credential chain",
         "kb_region": args.kb_region,
         "remote_region": args.remote_region,
+        "inference_profile": args.inference_profile,
+        "remote_model": args.remote_model,
         "tests": {},
     }
 
@@ -138,6 +142,8 @@ def main(argv=None):
     )
     if profile is None:
         return finish("PROFILE_LOOKUP_FAILED", 1)
+    # Summaries use the resolved ID, so an ARN override does not expose its account.
+    report["inference_profile"] = profile["inferenceProfileId"]
     profile_arn = profile["inferenceProfileArn"]
     if profile_arn.split(":")[3] != args.kb_region:
         return finish("PROFILE_ARN_MUST_USE_KB_REGION", 1)

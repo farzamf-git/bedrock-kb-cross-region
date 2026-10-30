@@ -31,8 +31,13 @@ For the complete live experiment, replace the example account and profile:
 ```bash
 uv run --frozen python scripts/live_smoke.py \
   --account 123456789012 \
-  --profile YOUR_PROFILE
+  --profile YOUR_PROFILE \
+  --inference-profile global.anthropic.claude-haiku-4-5-20251001-v1:0
 ```
+
+The current default is the **global Claude Haiku 4.5** inference profile.
+Both entrypoints accept `--inference-profile` to select another supported
+profile. Global routing may process the query and retrieved text outside APAC.
 
 The runner creates a private S3 source bucket, an S3 vector bucket/index, a
 dedicated IAM service role, a Singapore KB, and a data source. It indexes one
@@ -58,7 +63,7 @@ uv run --frozen python probe.py \
   --kb-id YOUR_KB_ID \
   --question "What is the verification code for Project Orchid?" \
   --expected-text ORCHID-7319 \
-  --inference-profile apac.amazon.nova-lite-v1:0 \
+  --inference-profile global.anthropic.claude-haiku-4-5-20251001-v1:0 \
   --remote-region ap-southeast-2 \
   --remote-model amazon.nova-lite-v1:0 \
   --test-foreign-arn \
@@ -97,6 +102,11 @@ for failures at other stages; do not delete the manifest and blindly rerun.
 
 ## What the test establishes
 
+The saved live evidence records the earlier Nova Lite configuration. The current
+Haiku 4.5 profile was resolved as `ACTIVE` in Singapore through a read-only AWS
+lookup, and the code change passed offline tests. It has not been rerun against
+a live KB; the earlier results do not establish Haiku generation success.
+
 The provider-live test on **30 October 2026** indexed one document with zero
 failures and returned the correct answer through both paths. All temporary AWS
 resources were removed and their absence verified.
@@ -114,7 +124,7 @@ Region, inspect the corresponding Bedrock CloudTrail event's
 on-demand model when your application needs to choose a specific inference
 Region.
 
-The default native Nova Lite RAG response included a tool-style preamble.
+The earlier native Nova Lite RAG response included a tool-style preamble.
 Production use needs prompt tuning and quality evaluation. The fixture is a
 smoke test, not a benchmark; parsing and production data were not tested.
 

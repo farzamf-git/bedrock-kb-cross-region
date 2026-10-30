@@ -13,12 +13,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--account", required=True)
     parser.add_argument("--profile")
     parser.add_argument("--region", default="ap-southeast-1")
-    args = parser.parse_args()
+    parser.add_argument(
+        "--inference-profile",
+        help="Inference profile ID or ARN; defaults to the selection in probe.py",
+    )
+    args = parser.parse_args(argv)
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid.uuid4().hex[:8]
     output = ROOT / "artifacts" / run_id
     output.mkdir(parents=True)
@@ -26,6 +30,7 @@ def main():
     common = ["--account", args.account]
     if args.profile:
         common += ["--profile", args.profile]
+    generation = ["--inference-profile", args.inference_profile] if args.inference_profile else []
     lifecycle = [
         sys.executable,
         str(ROOT / "manage.py"),
@@ -46,6 +51,7 @@ def main():
                     sys.executable,
                     str(ROOT / "probe.py"),
                     *common,
+                    *generation,
                     "--kb-region",
                     args.region,
                     "--kb-id",
@@ -76,8 +82,8 @@ def main():
         "evidence_type": "AWS provider-live synthetic smoke test",
         "kb_region": results["kb_region"],
         "remote_region": results["remote_region"],
-        "inference_profile": "apac.amazon.nova-lite-v1:0",
-        "remote_model": "amazon.nova-lite-v1:0",
+        "inference_profile": results["inference_profile"],
+        "remote_model": results["remote_model"],
         "status": results["status"],
         "expected_text_found": results["expected_text_found"],
         "native_citation_count": results["native_citation_count"],

@@ -12,13 +12,13 @@ flowchart LR
         KB["Bedrock Knowledge Base"]
         Embed["Cohere Embed English v3\nfixed 1024 dimensions"]
         Index["S3 Vectors index\nfloat32 · cosine"]
-        Profile["APAC Nova Lite\ninference profile ARN"]
+        Profile["Global Claude Haiku 4.5\ninference profile ARN"]
         KB -->|"ingest"| Source
         KB -->|"embed document and query"| Embed
         KB -->|"store / query vectors"| Index
     end
-    subgraph APAC["Profile's eligible APAC destinations"]
-        Routed["Nova Lite inference\nSingapore may be selected"]
+    subgraph Global["Profile's eligible global destinations"]
+        Routed["Claude Haiku 4.5 inference\nBedrock selects a Region"]
     end
     subgraph Sydney["Sydney · ap-southeast-2"]
         Remote["bedrock-runtime.Converse\non-demand Nova Lite model"]
@@ -37,6 +37,7 @@ inference-profile ARN as `knowledgeBaseConfiguration.modelArn`. Bedrock retrieve
 the context, selects a destination from the profile, generates an answer, and
 returns native citation objects. `GetInferenceProfile.models` lists eligible
 destinations; it does not reveal the destination used by a particular request.
+The global profile permits processing outside APAC.
 
 **Path B: application-controlled RAG.** The application calls Singapore
 `Retrieve`, numbers the returned text excerpts, then calls Sydney
@@ -47,7 +48,9 @@ Sydney, so the demonstrated path uses a regional on-demand foundation model.
 
 The optional third comparison sends a Sydney foundation-model ARN to Singapore
 `RetrieveAndGenerate`. It records the actual response rather than assuming the
-ARN will be rejected. The live test returned `ValidationException`.
+ARN will be rejected. The earlier Nova Lite live test returned `ValidationException`.
+The current Haiku profile selection has only been checked through read-only
+profile discovery and offline tests; it has not been used with a live KB.
 
 ## Provisioning and ownership
 
