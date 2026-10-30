@@ -9,3 +9,13 @@ artifacts/
 resource-manifest*.json
 results*.json
 .DS_Store
+.env
+.env.*
+!.env.example
+.aws/
+credentials
+credentials.*
+*.pem
+*.key
+*.p12
+*.pfx
