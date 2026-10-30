@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "tested_at_utc": "2026-10-30T03:37:53.319779+00:00",
+  "evidence_type": "AWS provider-live synthetic smoke test",
+  "kb_region": "ap-southeast-1",
+  "remote_region": "ap-southeast-2",
+  "inference_profile": "apac.amazon.nova-lite-v1:0",
+  "remote_model": "amazon.nova-lite-v1:0",
+  "status": "BOTH_PATHS_PASSED",
+  "expected_text_found": {
+    "retrieve_and_generate_profile": true,
+    "retrieve_then_remote_converse": true
+  },
+  "native_citation_count": 3,
+  "retrieved_chunks": 1,
+  "ingestion_statistics": {
+    "numberOfDocumentsScanned": 1,
+    "numberOfMetadataDocumentsScanned": 0,
+    "numberOfNewDocumentsIndexed": 1,
+    "numberOfModifiedDocumentsIndexed": 0,
+    "numberOfMetadataDocumentsModified": 0,
+    "numberOfDocumentsDeleted": 0,
+    "numberOfDocumentsFailed": 0,
+    "numberOfDocumentsSkipped": 0
+  },
+  "operations": {
+    "retrieve_home_region": {
+      "status": "SUCCESS",
+      "seconds": 0.392
+    },
+    "retrieve_and_generate_profile": {
+      "status": "SUCCESS",
+      "seconds": 1.125
+    },
+    "retrieve_and_generate_foreign_arn": {
+      "status": "ERROR",
+      "seconds": 0.478,
+      "code": "ValidationException"
+    },
+    "retrieve_then_remote_converse": {
+      "status": "SUCCESS",
+      "seconds": 0.86
+    }
+  },
+  "cleanup_status": "DELETED_AND_VERIFIED",
+  "cleanup_resources": {
+    "knowledge_base": "DELETED_AND_VERIFIED",
+    "data_source": "ABSENT_VERIFIED",
+    "vector_index": "DELETED_AND_VERIFIED",
+    "vector_bucket": "DELETED_AND_VERIFIED",
+    "source_bucket": "DELETED_AND_VERIFIED",
+    "service_role": "DELETED_AND_VERIFIED"
+  },
+  "code_sha256": {
+    "manage.py": "a640b91c417d1ba7c2f9c48f0b5239800172b8bca85021c0c0ec27ac8bfa9676",
+    "probe.py": "95040ef31792c7c735e5be290b5d01caadec65a0163ac80762789099648733e1",
+    "sample.txt": "69c854189ef5e248e35fd81bac178a2920b1a7735bbf3e9e69d3df5d8aae993c"
+  },
+  "limitations": [
+    "One document and one question; not a performance or quality benchmark.",
+    "The inference-profile request's actual processing Region was not observed.",
+    "Parsing was not tested."
+  ]
+}

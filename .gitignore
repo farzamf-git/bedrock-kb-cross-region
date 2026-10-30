@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+artifacts/
+*.egg-info/
+resource-manifest*.json
+results*.json
+.DS_Store

@@ -1,0 +1,24 @@
+[project]
+name = "bedrock-kb-cross-region"
+version = "0.1.0"
+description = "Small, reproducible Bedrock Knowledge Base cross-Region experiment"
+requires-python = ">=3.11"
+dependencies = ["boto3>=1.43.122,<2"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "pytest-cov>=6,<8", "ruff>=0.14,<1"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
