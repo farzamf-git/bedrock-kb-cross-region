@@ -139,8 +139,12 @@ smoke test, not a benchmark; parsing and production data were not tested.
 | [Architecture](docs/ARCHITECTURE.md) | Region boundaries, call paths, lifecycle, and tradeoffs |
 | [Testing](docs/TESTING.md) | Local checks and provider-live evidence |
 | [AWS prerequisites](docs/AWS_PREREQUISITES.md) | Models, permissions, residency, and failure handling |
-| [Open-source readiness](docs/OPEN_SOURCE_READINESS.md) | Credential and portability review; license remains to be selected |
+| [Open-source readiness](docs/OPEN_SOURCE_READINESS.md) | Credential, portability, and license review |
 
 AWS documents [inference-profile use with Knowledge Bases](https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-use.html),
 [KB model and Region support](https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base-supported.html),
 and [cross-Region routing](https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html).
+
+## License
+
+This project is licensed under the [Apache License 2.0](LICENSE).

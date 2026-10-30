@@ -1,8 +1,8 @@
 # Open-source readiness review
 
-Reviewed on 30 October 2026. The source is technically portable, with one
-publication prerequisite still unresolved: **the repository has no license**.
-Choose and add a license before presenting this as an open-source project.
+Reviewed on 30 October 2026. The source passed the credential and portability
+checks below. The repository now includes the [Apache License 2.0](../LICENSE),
+and the project metadata declares `Apache-2.0`.
 
 ## Credentials and repository contents
 

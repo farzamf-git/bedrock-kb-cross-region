@@ -2,6 +2,8 @@
 name = "bedrock-kb-cross-region"
 version = "0.1.0"
 description = "Small, reproducible Bedrock Knowledge Base cross-Region experiment"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = ["boto3>=1.43.122,<2"]
 
